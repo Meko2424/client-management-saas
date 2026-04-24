@@ -1,12 +1,12 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/mini_crm
-    username: postgres
-    password: solo2424
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/mini_crm}
+    username: ${SPRING_DATASOURCE_USERNAME:postgres}
+    password: ${SPRING_DATASOURCE_PASSWORD:solo2424}
 
   jpa:
     hibernate:
-      ddl-auto: validate   # IMPORTANT: Flyway controls schema
+      ddl-auto: validate
     show-sql: true
     properties:
       hibernate:
