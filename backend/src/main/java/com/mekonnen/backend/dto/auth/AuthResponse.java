@@ -3,11 +3,12 @@ package com.mekonnen.backend.dto.auth;
 
 // This DTO is returned after a successful register or login
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
-@Setter
+@AllArgsConstructor
 public class AuthResponse {
 
     // JWT token the frontend will store and send back on future requests.
