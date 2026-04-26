@@ -1,19 +1,35 @@
 import { apiFetch } from "./api";
 
-// Get all clients
+export type ClientPayload = {
+  name: string;
+  email?: string;
+  phone?: string;
+  company?: string;
+  notes?: string;
+};
+
 export function getClients() {
   return apiFetch("/api/clients");
 }
 
-// Create new client
-export function createClient(data: any) {
+export function getClientById(id: number) {
+  return apiFetch(`/api/clients/${id}`);
+}
+
+export function createClient(data: ClientPayload) {
   return apiFetch("/api/clients", {
     method: "POST",
     body: JSON.stringify(data),
   });
 }
 
-// Delete client
+export function updateClient(id: number, data: ClientPayload) {
+  return apiFetch(`/api/clients/${id}`, {
+    method: "PUT",
+    body: JSON.stringify(data),
+  });
+}
+
 export function deleteClient(id: number) {
   return apiFetch(`/api/clients/${id}`, {
     method: "DELETE",
