@@ -30,8 +30,12 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
         http
+                // Enable CORS so frontend can call backend.
+                .cors(Customizer.withDefaults())
                    // Disable CSRF because this is a stateless REST API using JWTs.
                 .csrf(csrf -> csrf.disable())
+
+
                   // Tell Spring Security not to use HTTP sessions
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
