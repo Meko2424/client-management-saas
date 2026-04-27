@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { Toaster } from "react-hot-toast";
+import { AuthProvider } from "@/context/AuthContext";
 
 export const metadata: Metadata = {
   title: "Mini CRM SaaS",
@@ -15,10 +16,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        {children}
-
-        {/* Toast notifications appear here globally */}
-        <Toaster position="top-right" />
+        <AuthProvider>
+          {children}
+          <Toaster position="top-right" />
+        </AuthProvider>
       </body>
     </html>
   );

@@ -1,5 +1,5 @@
 "use client";
-
+import { useAuth } from "@/context/AuthContext";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
@@ -9,12 +9,10 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const router = useRouter();
+  const { logout } = useAuth();
 
   function handleLogout() {
-    // Remove JWT token from browser storage
-    localStorage.removeItem("token");
-
-    // Send user back to login page
+    logout();
     router.push("/login");
   }
 
