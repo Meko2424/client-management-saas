@@ -5,6 +5,7 @@ import { loginApi } from "@/lib/authApi";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
+import Link from "next/link";
 
 export default function LoginPage() {
   const { register, handleSubmit } = useForm();
@@ -50,6 +51,12 @@ export default function LoginPage() {
         <button className="w-full bg-blue-600 text-white py-2 rounded">
           Login
         </button>
+        <p className="text-sm text-center mt-4">
+          Don&apos;t have an account?{" "}
+          <Link href="/register" className="text-blue-600 hover:underline">
+            Register
+          </Link>
+        </p>
       </form>
     </div>
   );
