@@ -46,3 +46,10 @@ export function createProject(data: any) {
     body: JSON.stringify(data),
   });
 }
+
+export function updateProjectStatus(id: number, status: string) {
+  return apiFetch(`/api/projects/${id}/status`, {
+    method: "PATCH",
+    body: JSON.stringify({ status }),
+  });
+}

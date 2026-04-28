@@ -3,6 +3,7 @@ package com.mekonnen.backend.service;
 
 import com.mekonnen.backend.dto.project.CreateProjectRequest;
 import com.mekonnen.backend.dto.project.ProjectResponse;
+import com.mekonnen.backend.dto.project.UpdateProjectStatusRequest;
 import com.mekonnen.backend.entity.Client;
 import com.mekonnen.backend.entity.Project;
 import com.mekonnen.backend.entity.User;
@@ -59,10 +60,24 @@ public class ProjectService {
                 .toList();
     }
 
+    public ProjectResponse updateStatus(Long id,
+                                        UpdateProjectStatusRequest request,
+                                        Authentication auth){
+        User user = getUser(auth);
+
+        Project project = projectRepository.findByIdAndUser(id, user)
+                .orElseThrow(() -> new ResourceNotFoundException("Project not found"));
+
+        project.setStatus(request.getStatus());
+
+        return map(projectRepository.save(project));
+    }
+
 
     private User getUser(Authentication auth){
         return userRepository.findByEmail(auth.getName())
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
     }
 
     private ProjectResponse map(Project p){
