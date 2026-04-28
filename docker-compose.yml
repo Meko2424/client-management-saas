@@ -26,5 +26,20 @@ services:
     ports:
       - "8080:8080"
 
+  frontend:
+    build:
+      context: ./frontend
+    container_name: mini-crm-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    environment:
+      NEXT_PUBLIC_API_BASE_URL: http://localhost:8080
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+
 volumes:
   postgres_data:

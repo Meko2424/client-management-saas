@@ -27,7 +27,7 @@ public class CorsConfig {
                         .allowedOrigins("http://localhost:3000")
 
                         // Allow common HTTP methods used by our API.
-                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                        .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
 
                         // Allow all request headers, including Authorization.
                         .allowedHeaders("*")

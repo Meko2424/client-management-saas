@@ -2,10 +2,7 @@ package com.mekonnen.backend.service;
 
 import com.mekonnen.backend.dto.invoice.CreateInvoiceRequest;
 import com.mekonnen.backend.dto.invoice.InvoiceResponse;
-import com.mekonnen.backend.entity.Client;
-import com.mekonnen.backend.entity.Invoice;
-import com.mekonnen.backend.entity.Project;
-import com.mekonnen.backend.entity.User;
+import com.mekonnen.backend.entity.*;
 import com.mekonnen.backend.exception.ResourceNotFoundException;
 import com.mekonnen.backend.repository.ClientRepository;
 import com.mekonnen.backend.repository.InvoiceRepository;
@@ -82,5 +79,20 @@ public class InvoiceService {
                 i.getClient().getName(),
                 i.getProject() != null ? i.getProject().getName() : null
         );
+    }
+
+    public InvoiceResponse updateStatus(Long id, InvoiceStatus status, Authentication auth) {
+        User user = getUser(auth);
+
+        Invoice invoice = invoiceRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Invoice not found"));
+
+        if (!invoice.getUser().getId().equals(user.getId())) {
+            throw new ResourceNotFoundException("Invoice not found");
+        }
+
+        invoice.setStatus(status);
+
+        return map(invoiceRepository.save(invoice));
     }
 }

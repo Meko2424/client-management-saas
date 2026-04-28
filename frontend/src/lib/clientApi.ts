@@ -53,3 +53,21 @@ export function updateProjectStatus(id: number, status: string) {
     body: JSON.stringify({ status }),
   });
 }
+
+export function getInvoices() {
+  return apiFetch("/api/invoices");
+}
+
+export function createInvoice(data: any) {
+  return apiFetch("/api/invoices", {
+    method: "POST",
+    body: JSON.stringify(data),
+  });
+}
+
+export function updateInvoiceStatus(id: number, status: string) {
+  return apiFetch(`/api/invoices/${id}/status`, {
+    method: "PATCH",
+    body: JSON.stringify({ status }),
+  });
+}
