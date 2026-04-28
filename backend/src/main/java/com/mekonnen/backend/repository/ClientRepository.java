@@ -15,4 +15,6 @@ public interface ClientRepository extends JpaRepository<Client, Long> {
 
     // Find one client by ID, but only if it belongs to the logged-in user.
     Optional<Client> findByIdAndUser(Long id, User user);
+
+    long countByUser(User user);
 }

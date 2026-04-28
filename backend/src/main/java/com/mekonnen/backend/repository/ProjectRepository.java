@@ -1,6 +1,7 @@
 package com.mekonnen.backend.repository;
 
 import com.mekonnen.backend.entity.Project;
+import com.mekonnen.backend.entity.ProjectStatus;
 import com.mekonnen.backend.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -13,4 +14,8 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
 
 
     Optional<Project> findByIdAndUser(Long id, User user);
+
+    long countByUser(User user);
+
+    long countByUserAndStatus(User user, ProjectStatus status);
 }
