@@ -35,3 +35,14 @@ export function deleteClient(id: number) {
     method: "DELETE",
   });
 }
+
+export function getProjects() {
+  return apiFetch("/api/projects");
+}
+
+export function createProject(data: any) {
+  return apiFetch("/api/projects", {
+    method: "POST",
+    body: JSON.stringify(data),
+  });
+}
