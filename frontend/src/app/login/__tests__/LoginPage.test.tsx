@@ -45,4 +45,26 @@ describe("LoginPage", () => {
       password: "password123",
     });
   });
+
+  it("shows error when login fails", async () => {
+    const user = userEvent.setup();
+
+    (loginApi as jest.Mock).mockRejectedValue(new Error("Invalid credentials"));
+
+    render(
+      <AuthProvider>
+        <LoginPage />
+      </AuthProvider>,
+    );
+
+    await user.type(screen.getByPlaceholderText("Email"), "wrong@example.com");
+    await user.type(screen.getByPlaceholderText("Password"), "wrongpass");
+
+    await user.click(screen.getByRole("button", { name: /login/i }));
+
+    expect(loginApi).toHaveBeenCalledWith({
+      email: "wrong@example.com",
+      password: "wrongpass",
+    });
+  });
 });
