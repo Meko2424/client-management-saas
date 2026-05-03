@@ -21,7 +21,6 @@ frontend/dist/
 
 # Java / backend
 backend/target/
-backend/.mvn/
 backend/*.iml
 
 # Misc
