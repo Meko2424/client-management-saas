@@ -23,6 +23,11 @@ app:
   jwt:
     secret: MDEyMzQ1Njc4OTAxMjM0NTY3ODkwMTIzNDU2Nzg5MDEyMzQ1Njc4OTAxMjM0NTY3ODkwMTIzNDU2Nzg5MDEyMw==
     expiration-ms: 86400000
+  frontend-url: ${APP_FRONTEND_URL:http://localhost:3000}
+  stripe:
+    secret-key: ${STRIPE_SECRET_KEY:}
+    webhook-secret: ${STRIPE_WEBHOOK_SECRET:}
+    pro-price-id: ${STRIPE_PRO_PRICE_ID:}
 
 ###################################################################################
 #spring:

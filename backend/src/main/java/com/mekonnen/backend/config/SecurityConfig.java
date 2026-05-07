@@ -42,7 +42,7 @@ public class SecurityConfig {
                 )
                   // Configure route permissions
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/api/auth/**", "/api/billing/webhook").permitAll()
                         .anyRequest().authenticated()
                 )
                    // Add our JWT filter before Spring's username/password filter

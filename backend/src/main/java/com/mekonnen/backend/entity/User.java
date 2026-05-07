@@ -40,5 +40,17 @@ public class User {
     @Column(name = "updated_at", insertable = false)
     private LocalDateTime updatedAt;
 
+    @Column(name = "subscription_plan", nullable = false)
+    private String subscriptionPlan = "FREE";
+
+    @Column(name = "subscription_status", nullable = false)
+    private String subscriptionStatus = "INACTIVE";
+
+    @Column(name = "stripe_customer_id")
+    private String stripeCustomerId;
+
+    @Column(name = "stripe_subscription_id")
+    private String stripeSubscriptionId;
+
 
 }
