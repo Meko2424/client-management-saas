@@ -38,7 +38,7 @@ public class InvoiceService {
     public InvoiceResponse create(CreateInvoiceRequest request, Authentication auth) {
         User user = getUser(auth);
 
-        featureLimitService.checkClientLimit(user);
+        featureLimitService.checkInvoiceLimit(user);
 
         Client client = clientRepository.findByIdAndUser(request.getClientId(), user)
                 .orElseThrow(() -> new ResourceNotFoundException("Client not found"));

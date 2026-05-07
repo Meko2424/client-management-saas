@@ -41,7 +41,7 @@ public class ProjectService {
     public ProjectResponse createProject(CreateProjectRequest request, Authentication auth){
         User user = getUser(auth);
 
-        featureLimitService.checkClientLimit(user);
+        featureLimitService.checkProjectLimit(user);
 
         Client client = clientRepository.findByIdAndUser(request.getClientId(), user)
                 .orElseThrow(() -> new ResourceNotFoundException("Client not found"));
