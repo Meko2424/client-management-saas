@@ -26,11 +26,13 @@ class ProjectServiceTest {
         ProjectRepository projectRepository = mock(ProjectRepository.class);
         UserRepository userRepository = mock(UserRepository.class);
         ClientRepository clientRepository = mock(ClientRepository.class);
+        FeatureLimitService featureLimitService = mock(FeatureLimitService.class);
 
         ProjectService projectService = new ProjectService(
                 projectRepository,
                 userRepository,
-                clientRepository
+                clientRepository,
+                featureLimitService
         );
 
         Authentication authentication = mock(Authentication.class);
@@ -84,11 +86,13 @@ class ProjectServiceTest {
         ProjectRepository projectRepository = mock(ProjectRepository.class);
         UserRepository userRepository = mock(UserRepository.class);
         ClientRepository clientRepository = mock(ClientRepository.class);
+        FeatureLimitService featureLimitService = mock(FeatureLimitService.class);
 
         ProjectService projectService = new ProjectService(
                 projectRepository,
                 userRepository,
-                clientRepository
+                clientRepository,
+                featureLimitService
         );
 
         Authentication authentication = mock(Authentication.class);

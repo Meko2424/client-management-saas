@@ -20,19 +20,25 @@ public class InvoiceService {
     private final UserRepository userRepository;
     private final ClientRepository clientRepository;
     private final ProjectRepository projectRepository;
+    private final FeatureLimitService featureLimitService;
 
     public InvoiceService(InvoiceRepository invoiceRepository,
                           UserRepository userRepository,
                           ClientRepository clientRepository,
-                          ProjectRepository projectRepository) {
+                          ProjectRepository projectRepository,
+                          FeatureLimitService featureLimitService
+                          ) {
         this.invoiceRepository = invoiceRepository;
         this.userRepository = userRepository;
         this.clientRepository = clientRepository;
         this.projectRepository = projectRepository;
+        this.featureLimitService = featureLimitService;
     }
 
     public InvoiceResponse create(CreateInvoiceRequest request, Authentication auth) {
         User user = getUser(auth);
+
+        featureLimitService.checkClientLimit(user);
 
         Client client = clientRepository.findByIdAndUser(request.getClientId(), user)
                 .orElseThrow(() -> new ResourceNotFoundException("Client not found"));

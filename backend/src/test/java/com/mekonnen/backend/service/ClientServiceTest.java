@@ -25,9 +25,14 @@ class ClientServiceTest {
         // Create fake repository.
         ClientRepository clientRepository = Mockito.mock(ClientRepository.class);
         UserRepository userRepository = Mockito.mock(UserRepository.class);
+        FeatureLimitService featureLimitService = mock(FeatureLimitService.class);
 
         // Create the service we want to test
-        ClientService clientService = new ClientService(clientRepository, userRepository);
+        ClientService clientService = new ClientService(
+                clientRepository,
+                userRepository,
+                featureLimitService
+        );
 
         // Fake authentication user email
         Authentication authentication = Mockito.mock(Authentication.class);
@@ -81,8 +86,13 @@ class ClientServiceTest {
     void createClient_shouldThrowExceptionWhenUserNotFound(){
         ClientRepository clientRepository = Mockito.mock(ClientRepository.class);
         UserRepository userRepository = Mockito.mock(UserRepository.class);
+        FeatureLimitService featureLimitService = mock(FeatureLimitService.class);
 
-        ClientService clientService = new ClientService(clientRepository, userRepository);
+        ClientService clientService = new ClientService(
+                clientRepository,
+                userRepository,
+                featureLimitService
+        );
 
         Authentication authentication = Mockito.mock(Authentication.class);
         when(authentication.getName()).thenReturn("missing@example.com");

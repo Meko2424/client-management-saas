@@ -29,12 +29,14 @@ class InvoiceServiceTest {
         UserRepository userRepository = mock(UserRepository.class);
         ClientRepository clientRepository = mock(ClientRepository.class);
         ProjectRepository projectRepository = mock(ProjectRepository.class);
+        FeatureLimitService featureLimitService = mock(FeatureLimitService.class);
 
         InvoiceService service = new InvoiceService(
                 invoiceRepository,
                 userRepository,
                 clientRepository,
-                projectRepository
+                projectRepository,
+                featureLimitService
         );
 
         Authentication auth = mock(Authentication.class);
@@ -95,12 +97,14 @@ class InvoiceServiceTest {
         UserRepository userRepository = mock(UserRepository.class);
         ClientRepository clientRepository = mock(ClientRepository.class);
         ProjectRepository projectRepository = mock(ProjectRepository.class);
+        FeatureLimitService featureLimitService = mock(FeatureLimitService.class);
 
         InvoiceService service = new InvoiceService(
                 invoiceRepository,
                 userRepository,
                 clientRepository,
-                projectRepository
+                projectRepository,
+                featureLimitService
         );
 
         Authentication auth = mock(Authentication.class);
@@ -150,12 +154,14 @@ class InvoiceServiceTest {
         UserRepository userRepository = mock(UserRepository.class);
         ClientRepository clientRepository = mock(ClientRepository.class);
         ProjectRepository projectRepository = mock(ProjectRepository.class);
+        FeatureLimitService featureLimitService = mock(FeatureLimitService.class);
 
         InvoiceService service = new InvoiceService(
                 invoiceRepository,
                 userRepository,
                 clientRepository,
-                projectRepository
+                projectRepository,
+                featureLimitService
         );
 
         Authentication auth = mock(Authentication.class);

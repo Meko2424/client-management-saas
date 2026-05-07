@@ -20,16 +20,21 @@ public class ClientService {
 
     private final ClientRepository clientRepository;
     private final UserRepository userRepository;
+    private final FeatureLimitService featureLimitService;
 
     public ClientService(ClientRepository clientRepository,
-                         UserRepository userRepository) {
+                         UserRepository userRepository,
+                         FeatureLimitService featureLimitService) {
         this.clientRepository = clientRepository;
         this.userRepository = userRepository;
+        this.featureLimitService = featureLimitService;
     }
 
     // Create a new client for the currently logged-in user.
     public ClientResponse createClient(CreateClientRequest request, Authentication authentication) {
         User user = getCurrentUser(authentication);
+
+        featureLimitService.checkClientLimit(user);
 
         Client client = new Client();
         client.setUser(user);

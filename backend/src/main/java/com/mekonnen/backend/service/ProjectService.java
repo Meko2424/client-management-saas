@@ -22,19 +22,26 @@ public class ProjectService {
     private final ProjectRepository projectRepository;
     private final UserRepository userRepository;
     private final ClientRepository clientRepository;
+    private final FeatureLimitService featureLimitService;
 
-    public ProjectService(ProjectRepository projectRepository,
+    public ProjectService(
+            ProjectRepository projectRepository,
                           UserRepository userRepository,
-                          ClientRepository clientRepository){
+                          ClientRepository clientRepository,
+                          FeatureLimitService featureLimitService
+    ){
         this.projectRepository = projectRepository;
         this.userRepository = userRepository;
         this.clientRepository = clientRepository;
+        this.featureLimitService = featureLimitService;
     }
 
 
 
     public ProjectResponse createProject(CreateProjectRequest request, Authentication auth){
         User user = getUser(auth);
+
+        featureLimitService.checkClientLimit(user);
 
         Client client = clientRepository.findByIdAndUser(request.getClientId(), user)
                 .orElseThrow(() -> new ResourceNotFoundException("Client not found"));
