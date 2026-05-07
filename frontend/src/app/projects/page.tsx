@@ -73,8 +73,10 @@ export default function ProjectsPage() {
 
       setName("");
       setClientId("");
-    } catch {
-      toast.error("Failed to create project");
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Failed to create project",
+      );
     }
   }
 

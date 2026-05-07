@@ -74,8 +74,10 @@ export default function InvoicesPage() {
       setAmount("");
       setClientId("");
       setProjectId("");
-    } catch {
-      toast.error("Failed to create invoice");
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Failed to create invoice",
+      );
     }
   }
 

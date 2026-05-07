@@ -22,7 +22,12 @@ export async function apiFetch(endpoint: string, options: RequestInit = {}) {
 
   if (!res.ok) {
     const error = await res.json().catch(() => ({}));
-    throw error;
+
+    if (res.status === 403) {
+      throw new Error(error.message || "Upgrade required");
+    }
+
+    throw new Error(error.message || "Something went wrong");
   }
 
   return res.json();

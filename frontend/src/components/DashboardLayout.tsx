@@ -38,6 +38,10 @@ export default function DashboardLayout({
           <Link className="block hover:text-blue-300" href="/invoices">
             Invoices
           </Link>
+
+          <Link className="block hover:text-blue-300" href="/upgrade">
+            Upgrade
+          </Link>
         </nav>
 
         <button

@@ -63,8 +63,10 @@ export default function ClientsPage() {
       toast.success("Client created");
       reset();
       loadClients();
-    } catch {
-      toast.error("Failed to create client");
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Failed to create client",
+      );
     }
   }
 
