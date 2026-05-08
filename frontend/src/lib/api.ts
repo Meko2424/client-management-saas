@@ -30,5 +30,9 @@ export async function apiFetch(endpoint: string, options: RequestInit = {}) {
     throw new Error(error.message || "Something went wrong");
   }
 
+  if (res.status === 204) {
+    return null;
+  }
+
   return res.json();
 }

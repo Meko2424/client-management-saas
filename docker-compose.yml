@@ -11,6 +11,11 @@ services:
       - "5433:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres -d mini_crm" ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
 
   backend:
     build:
@@ -18,7 +23,9 @@ services:
     container_name: mini-crm-backend
     restart: unless-stopped
     depends_on:
-      - db
+       db:
+         condition: service_healthy
+
     environment:
       SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL}
       SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
