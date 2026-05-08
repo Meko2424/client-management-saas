@@ -5,3 +5,7 @@ export function createCheckoutSession() {
     method: "POST",
   });
 }
+
+export function getBillingStatus() {
+  return apiFetch("/api/billing/status");
+}
