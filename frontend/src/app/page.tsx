@@ -17,6 +17,7 @@ import {
 import DashboardLayout from "@/components/DashboardLayout";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import { getDashboardSummary } from "@/lib/dashboardApi";
+import { getBillingStatus } from "@/lib/billingApi";
 
 type DashboardSummary = {
   totalClients: number;
@@ -32,15 +33,29 @@ type DashboardSummary = {
   outstandingRevenue: number;
 };
 
+type BillingStatus = {
+  subscriptionPlan: string;
+  subscriptionStatus: string;
+};
+
 export default function DashboardPage() {
   const [summary, setSummary] = useState<DashboardSummary | null>(null);
   const [loading, setLoading] = useState(true);
 
+  const [billingStatus, setBillingStatus] = useState<BillingStatus | null>(
+    null,
+  );
+
   useEffect(() => {
     async function loadSummary() {
       try {
-        const data = await getDashboardSummary();
-        setSummary(data);
+        const [summaryData, billingData] = await Promise.all([
+          getDashboardSummary(),
+          getBillingStatus(),
+        ]);
+
+        setSummary(summaryData);
+        setBillingStatus(billingData);
       } catch {
         toast.error("Failed to load dashboard summary");
       } finally {
@@ -66,6 +81,9 @@ export default function DashboardPage() {
         { name: "Paid", value: summary.paidInvoices },
       ]
     : [];
+  const isPro =
+    billingStatus?.subscriptionPlan === "PRO" &&
+    billingStatus?.subscriptionStatus === "ACTIVE";
 
   return (
     <ProtectedRoute>
@@ -149,6 +167,73 @@ export default function DashboardPage() {
                     </PieChart>
                   </ResponsiveContainer>
                 </ChartCard>
+                <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
+                  {isPro ? (
+                    <>
+                      <ChartCard title="Revenue Performance">
+                        <div className="space-y-4">
+                          <div className="rounded-lg bg-green-50 p-4">
+                            <p className="text-sm text-green-700">
+                              Paid Revenue
+                            </p>
+                            <p className="text-3xl font-bold text-green-800">
+                              ${summary.paidRevenue.toFixed(2)}
+                            </p>
+                          </div>
+
+                          <div className="rounded-lg bg-blue-50 p-4">
+                            <p className="text-sm text-blue-700">
+                              Outstanding Revenue
+                            </p>
+                            <p className="text-3xl font-bold text-blue-800">
+                              ${summary.outstandingRevenue.toFixed(2)}
+                            </p>
+                          </div>
+                        </div>
+                      </ChartCard>
+
+                      <ChartCard title="Business Health">
+                        <div className="space-y-4">
+                          <PremiumMetric
+                            label="Invoice Collection Rate"
+                            value={
+                              summary.totalInvoices === 0
+                                ? "0%"
+                                : `${Math.round(
+                                    (summary.paidInvoices /
+                                      summary.totalInvoices) *
+                                      100,
+                                  )}%`
+                            }
+                          />
+
+                          <PremiumMetric
+                            label="Project Completion Rate"
+                            value={
+                              summary.totalProjects === 0
+                                ? "0%"
+                                : `${Math.round(
+                                    (summary.completedProjects /
+                                      summary.totalProjects) *
+                                      100,
+                                  )}%`
+                            }
+                          />
+
+                          <PremiumMetric
+                            label="Open Revenue"
+                            value={`$${summary.outstandingRevenue.toFixed(2)}`}
+                          />
+                        </div>
+                      </ChartCard>
+                    </>
+                  ) : (
+                    <>
+                      <LockedPremiumCard title="Revenue Performance" />
+                      <LockedPremiumCard title="Business Health" />
+                    </>
+                  )}
+                </div>
               </div>
             </>
           )}
@@ -184,6 +269,42 @@ function ChartCard({
     <div className="rounded-xl bg-white p-6 shadow">
       <h2 className="mb-4 text-lg font-semibold text-slate-900">{title}</h2>
       {children}
+    </div>
+  );
+}
+
+function PremiumMetric({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex items-center justify-between rounded-lg border p-4">
+      <p className="text-sm font-medium text-slate-600">{label}</p>
+      <p className="text-xl font-bold text-slate-900">{value}</p>
+    </div>
+  );
+}
+
+function LockedPremiumCard({ title }: { title: string }) {
+  return (
+    <div className="relative overflow-hidden rounded-xl bg-white p-6 shadow">
+      <div className="absolute inset-0 bg-white/70 backdrop-blur-sm" />
+
+      <div className="relative z-10">
+        <div className="mb-4 inline-flex rounded-full bg-yellow-100 px-3 py-1 text-xs font-semibold text-yellow-700">
+          PRO FEATURE
+        </div>
+
+        <h2 className="text-lg font-semibold text-slate-900">{title}</h2>
+
+        <p className="mt-3 text-sm text-slate-500">
+          Upgrade to PRO to unlock advanced analytics and business insights.
+        </p>
+
+        <a
+          href="/upgrade"
+          className="mt-5 inline-block rounded-lg bg-blue-600 px-4 py-2 text-sm text-white hover:bg-blue-700"
+        >
+          Upgrade to PRO
+        </a>
+      </div>
     </div>
   );
 }
