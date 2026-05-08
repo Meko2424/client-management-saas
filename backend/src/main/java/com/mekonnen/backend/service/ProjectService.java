@@ -3,6 +3,7 @@ package com.mekonnen.backend.service;
 
 import com.mekonnen.backend.dto.project.CreateProjectRequest;
 import com.mekonnen.backend.dto.project.ProjectResponse;
+import com.mekonnen.backend.dto.project.UpdateProjectRequest;
 import com.mekonnen.backend.dto.project.UpdateProjectStatusRequest;
 import com.mekonnen.backend.entity.Client;
 import com.mekonnen.backend.entity.Project;
@@ -78,6 +79,43 @@ public class ProjectService {
         project.setStatus(request.getStatus());
 
         return map(projectRepository.save(project));
+    }
+
+    // Update an existing project owned by the logged-in user.
+    public ProjectResponse updateProject(
+            Long id,
+            UpdateProjectRequest request,
+            Authentication auth
+    ) {
+        User user = getUser(auth);
+
+        Project project = projectRepository.findByIdAndUser(id, user)
+                .orElseThrow(() -> new ResourceNotFoundException("Project not found"));
+
+        Client client = clientRepository.findByIdAndUser(request.getClientId(), user)
+                .orElseThrow(() -> new ResourceNotFoundException("Client not found"));
+
+        project.setClient(client);
+        project.setName(request.getName());
+        project.setDescription(request.getDescription());
+        project.setStatus(request.getStatus());
+        project.setBudget(request.getBudget());
+        project.setStartDate(request.getStartDate());
+        project.setDueDate(request.getDueDate());
+
+        Project updatedProject = projectRepository.save(project);
+
+        return map(updatedProject);
+    }
+
+    // Delete an existing project owned by the logged-in user.
+    public void deleteProject(Long id, Authentication auth) {
+        User user = getUser(auth);
+
+        Project project = projectRepository.findByIdAndUser(id, user)
+                .orElseThrow(() -> new ResourceNotFoundException("Project not found"));
+
+        projectRepository.delete(project);
     }
 
 

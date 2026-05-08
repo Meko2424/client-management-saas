@@ -3,9 +3,11 @@ package com.mekonnen.backend.controller;
 
 import com.mekonnen.backend.dto.project.CreateProjectRequest;
 import com.mekonnen.backend.dto.project.ProjectResponse;
+import com.mekonnen.backend.dto.project.UpdateProjectRequest;
 import com.mekonnen.backend.dto.project.UpdateProjectStatusRequest;
 import com.mekonnen.backend.service.ProjectService;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -41,5 +43,23 @@ public class ProjectController {
             Authentication auth
     ){
         return projectService.updateStatus(id, request, auth);
+    }
+
+    @PutMapping("/{id}")
+    public ProjectResponse update(
+            @PathVariable Long id,
+            @Valid @RequestBody UpdateProjectRequest request,
+            Authentication auth
+    ) {
+        return projectService.updateProject(id, request, auth);
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(
+            @PathVariable Long id,
+            Authentication auth
+    ) {
+        projectService.deleteProject(id, auth);
     }
 }
