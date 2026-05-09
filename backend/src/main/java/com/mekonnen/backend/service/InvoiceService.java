@@ -2,6 +2,7 @@ package com.mekonnen.backend.service;
 
 import com.mekonnen.backend.dto.invoice.CreateInvoiceRequest;
 import com.mekonnen.backend.dto.invoice.InvoiceResponse;
+import com.mekonnen.backend.dto.invoice.UpdateInvoiceRequest;
 import com.mekonnen.backend.entity.*;
 import com.mekonnen.backend.exception.ResourceNotFoundException;
 import com.mekonnen.backend.repository.ClientRepository;
@@ -70,6 +71,8 @@ public class InvoiceService {
                 .toList();
     }
 
+
+
     private User getUser(Authentication auth) {
         return userRepository.findByEmail(auth.getName())
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
@@ -100,5 +103,49 @@ public class InvoiceService {
         invoice.setStatus(status);
 
         return map(invoiceRepository.save(invoice));
+    }
+
+    // Update an invoice owned by the logged-in user.
+    public InvoiceResponse update(
+            Long id,
+            UpdateInvoiceRequest request,
+            Authentication auth
+    ) {
+        User user = getUser(auth);
+
+        Invoice invoice = invoiceRepository.findByIdAndUser(id, user)
+                .orElseThrow(() -> new ResourceNotFoundException("Invoice not found"));
+
+        Client client = clientRepository.findByIdAndUser(request.getClientId(), user)
+                .orElseThrow(() -> new ResourceNotFoundException("Client not found"));
+
+        Project project = null;
+
+        if (request.getProjectId() != null) {
+            project = projectRepository.findByIdAndUser(request.getProjectId(), user)
+                    .orElseThrow(() -> new ResourceNotFoundException("Project not found"));
+        }
+
+        invoice.setClient(client);
+        invoice.setProject(project);
+        invoice.setAmount(request.getAmount());
+        invoice.setStatus(request.getStatus());
+        invoice.setIssueDate(request.getIssueDate());
+        invoice.setDueDate(request.getDueDate());
+        invoice.setNotes(request.getNotes());
+
+        Invoice updatedInvoice = invoiceRepository.save(invoice);
+
+        return map(updatedInvoice);
+    }
+
+    // Delete an invoice owned by the logged-in user.
+    public void delete(Long id, Authentication auth) {
+        User user = getUser(auth);
+
+        Invoice invoice = invoiceRepository.findByIdAndUser(id, user)
+                .orElseThrow(() -> new ResourceNotFoundException("Invoice not found"));
+
+        invoiceRepository.delete(invoice);
     }
 }

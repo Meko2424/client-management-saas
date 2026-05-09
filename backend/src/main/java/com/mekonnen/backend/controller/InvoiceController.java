@@ -3,9 +3,11 @@ package com.mekonnen.backend.controller;
 
 import com.mekonnen.backend.dto.invoice.CreateInvoiceRequest;
 import com.mekonnen.backend.dto.invoice.InvoiceResponse;
+import com.mekonnen.backend.dto.invoice.UpdateInvoiceRequest;
 import com.mekonnen.backend.entity.InvoiceStatus;
 import com.mekonnen.backend.service.InvoiceService;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,6 +35,24 @@ public class InvoiceController {
     @GetMapping
     public List<InvoiceResponse> getAll(Authentication auth) {
         return invoiceService.getAll(auth);
+    }
+
+    @PutMapping("/{id}")
+    public InvoiceResponse update(
+            @PathVariable Long id,
+            @Valid @RequestBody UpdateInvoiceRequest request,
+            Authentication auth
+    ) {
+        return invoiceService.update(id, request, auth);
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(
+            @PathVariable Long id,
+            Authentication auth
+    ) {
+        invoiceService.delete(id, auth);
     }
 
     @PatchMapping("/{id}/status")

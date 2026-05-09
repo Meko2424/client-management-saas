@@ -42,4 +42,7 @@ public class Invoice {
 
     @Column(name = "created_at", insertable = false, updatable = false)
     private LocalDateTime createdAt;
+
+    @Column(columnDefinition = "TEXT")
+    private String notes;
 }
