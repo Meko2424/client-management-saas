@@ -47,6 +47,14 @@ export default function LoginPage() {
           placeholder="Password"
           {...register("password")}
         />
+        <div className="mb-4 text-right">
+          <Link
+            href="/forgot-password"
+            className="text-sm text-blue-600 hover:underline"
+          >
+            Forgot password?
+          </Link>
+        </div>
 
         <button className="w-full bg-blue-600 text-white py-2 rounded">
           Login
