@@ -5,7 +5,12 @@ import toast from "react-hot-toast";
 import Link from "next/link";
 import DashboardLayout from "@/components/DashboardLayout";
 import ProtectedRoute from "@/components/ProtectedRoute";
-import { createClient, deleteClient, getClients } from "@/lib/clientApi";
+import {
+  createClient,
+  deleteClient,
+  getClients,
+  updateClient,
+} from "@/lib/clientApi";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -32,6 +37,7 @@ type Client = {
 export default function ClientsPage() {
   const [clients, setClients] = useState<Client[]>([]);
   const [loading, setLoading] = useState(true);
+  const [editingClientId, setEditingClientId] = useState<number | null>(null);
 
   const {
     register,
@@ -59,15 +65,54 @@ export default function ClientsPage() {
 
   async function onSubmit(data: ClientFormData) {
     try {
-      await createClient(data);
-      toast.success("Client created");
-      reset();
-      loadClients();
+      if (editingClientId) {
+        await updateClient(editingClientId, data);
+        toast.success("Client updated");
+      } else {
+        await createClient(data);
+        toast.success("Client created");
+      }
+
+      reset({
+        name: "",
+        email: "",
+        phone: "",
+        company: "",
+        notes: "",
+      });
+
+      setEditingClientId(null);
+
+      await loadClients();
     } catch (error) {
       toast.error(
-        error instanceof Error ? error.message : "Failed to create client",
+        error instanceof Error ? error.message : "Failed to save client",
       );
     }
+  }
+
+  function handleEdit(client: Client) {
+    setEditingClientId(client.id);
+
+    reset({
+      name: client.name || "",
+      email: client.email || "",
+      phone: client.phone || "",
+      company: client.company || "",
+      notes: client.notes || "",
+    });
+  }
+
+  function handleCancelEdit() {
+    setEditingClientId(null);
+
+    reset({
+      name: "",
+      email: "",
+      phone: "",
+      company: "",
+      notes: "",
+    });
   }
 
   async function handleDelete(id: number) {
@@ -87,7 +132,9 @@ export default function ClientsPage() {
       <DashboardLayout>
         <div className="max-w-6xl mx-auto">
           <div className="mb-6">
-            <h1 className="text-3xl font-bold text-slate-900">Clients</h1>
+            <h2 className="text-lg font-semibold mb-4">
+              {editingClientId ? "Edit Client" : "Add Client"}
+            </h2>
             <p className="text-slate-500">
               Manage your freelance clients in one place.
             </p>
@@ -96,7 +143,9 @@ export default function ClientsPage() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Create client form */}
             <div className="bg-white rounded-xl shadow p-6">
-              <h2 className="text-lg font-semibold mb-4">Add Client</h2>
+              <h2 className="text-lg font-semibold mb-4">
+                {editingClientId ? "Edit Client" : "Add Client"}
+              </h2>
 
               <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                 <div>
@@ -148,8 +197,21 @@ export default function ClientsPage() {
                   disabled={isSubmitting}
                   className="w-full rounded-lg bg-blue-600 text-white py-2 hover:bg-blue-700 disabled:opacity-60"
                 >
-                  {isSubmitting ? "Saving..." : "Create Client"}
+                  {isSubmitting
+                    ? "Saving..."
+                    : editingClientId
+                      ? "Update Client"
+                      : "Create Client"}
                 </button>
+                {editingClientId && (
+                  <button
+                    type="button"
+                    onClick={handleCancelEdit}
+                    className="w-full rounded-lg bg-slate-500 text-white py-2 hover:bg-slate-600"
+                  >
+                    Cancel Edit
+                  </button>
+                )}
               </form>
             </div>
 
@@ -186,13 +248,21 @@ export default function ClientsPage() {
                           </p>
                         )}
                       </div>
+                      <div className="flex gap-3">
+                        <button
+                          onClick={() => handleEdit(client)}
+                          className="text-blue-600 hover:text-blue-800"
+                        >
+                          Edit
+                        </button>
 
-                      <button
-                        onClick={() => handleDelete(client.id)}
-                        className="text-red-600 hover:text-red-800"
-                      >
-                        Delete
-                      </button>
+                        <button
+                          onClick={() => handleDelete(client.id)}
+                          className="text-red-600 hover:text-red-800"
+                        >
+                          Delete
+                        </button>
+                      </div>
                     </div>
                   ))}
                 </div>
