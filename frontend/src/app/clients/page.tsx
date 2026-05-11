@@ -247,6 +247,13 @@ export default function ClientsPage() {
                             {client.company}
                           </p>
                         )}
+
+                        {client.notes && (
+                          <p className="mt-2 text-sm text-slate-600">
+                            <span className="font-medium">Notes:</span>{" "}
+                            {client.notes}
+                          </p>
+                        )}
                       </div>
                       <div className="flex gap-3">
                         <button

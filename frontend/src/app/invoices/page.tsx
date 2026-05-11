@@ -7,6 +7,8 @@ import ProtectedRoute from "@/components/ProtectedRoute";
 import {
   getInvoices,
   createInvoice,
+  updateInvoice,
+  deleteInvoice,
   updateInvoiceStatus,
   getClients,
   getProjects,
@@ -16,12 +18,21 @@ type Invoice = {
   id: number;
   amount: number;
   status: string;
+  issueDate?: string;
+  dueDate?: string;
+  notes?: string;
   clientName: string;
   projectName?: string;
 };
 
 export default function InvoicesPage() {
   const [invoices, setInvoices] = useState<Invoice[]>([]);
+  const [editingInvoiceId, setEditingInvoiceId] = useState<number | null>(null);
+  const [status, setStatus] = useState("DRAFT");
+  const [issueDate, setIssueDate] = useState("");
+  const [dueDate, setDueDate] = useState("");
+  const [notes, setNotes] = useState("");
+
   const [clients, setClients] = useState<any[]>([]);
   const [projects, setProjects] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -52,7 +63,38 @@ export default function InvoicesPage() {
     loadData();
   }, []);
 
-  async function handleCreate(e: any) {
+  function handleEditInvoice(invoice: Invoice) {
+    setEditingInvoiceId(invoice.id);
+    setAmount(String(invoice.amount || ""));
+    setStatus(invoice.status || "DRAFT");
+    setIssueDate(invoice.issueDate || "");
+    setDueDate(invoice.dueDate || "");
+    setNotes(invoice.notes || "");
+
+    const matchingClient = clients.find(
+      (client) => client.name === invoice.clientName,
+    );
+
+    const matchingProject = projects.find(
+      (project) => project.name === invoice.projectName,
+    );
+
+    setClientId(matchingClient ? matchingClient.id : "");
+    setProjectId(matchingProject ? matchingProject.id : "");
+  }
+
+  function handleCancelEdit() {
+    setEditingInvoiceId(null);
+    setAmount("");
+    setStatus("DRAFT");
+    setIssueDate("");
+    setDueDate("");
+    setNotes("");
+    setClientId("");
+    setProjectId("");
+  }
+
+  async function handleSaveInvoice(e: React.FormEvent) {
     e.preventDefault();
 
     if (!clientId || !amount) {
@@ -60,23 +102,55 @@ export default function InvoicesPage() {
       return;
     }
 
+    const payload = {
+      clientId,
+      projectId: projectId || null,
+      amount: Number(amount),
+      status,
+      issueDate: issueDate || null,
+      dueDate: dueDate || null,
+      notes,
+    };
+
     try {
-      const newInvoice = await createInvoice({
-        clientId,
-        projectId: projectId || null,
-        amount: Number(amount),
-      });
+      if (editingInvoiceId) {
+        const updated = await updateInvoice(editingInvoiceId, payload);
 
-      setInvoices((prev) => [newInvoice, ...prev]);
+        setInvoices((prev) =>
+          prev.map((invoice) =>
+            invoice.id === editingInvoiceId ? updated : invoice,
+          ),
+        );
 
-      toast.success("Invoice created");
+        toast.success("Invoice updated");
+      } else {
+        const newInvoice = await createInvoice(payload);
 
-      setAmount("");
-      setClientId("");
-      setProjectId("");
+        setInvoices((prev) => [newInvoice, ...prev]);
+
+        toast.success("Invoice created");
+      }
+
+      handleCancelEdit();
     } catch (error) {
       toast.error(
-        error instanceof Error ? error.message : "Failed to create invoice",
+        error instanceof Error ? error.message : "Failed to save invoice",
+      );
+    }
+  }
+
+  async function handleDeleteInvoice(id: number) {
+    if (!confirm("Delete this invoice?")) return;
+
+    try {
+      await deleteInvoice(id);
+
+      setInvoices((prev) => prev.filter((invoice) => invoice.id !== id));
+
+      toast.success("Invoice deleted");
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Failed to delete invoice",
       );
     }
   }
@@ -111,32 +185,37 @@ export default function InvoicesPage() {
   return (
     <ProtectedRoute>
       <DashboardLayout>
-        <div className="max-w-6xl mx-auto">
-          <h1 className="text-3xl font-bold mb-6">Invoices</h1>
+        <div className="mx-auto max-w-6xl">
+          <h1 className="mb-6 text-3xl font-bold">Invoices</h1>
 
-          {/* Revenue */}
-          <div className="mb-6 bg-white p-6 rounded-xl shadow">
+          <div className="mb-6 rounded-xl bg-white p-6 shadow">
             <p className="text-sm text-gray-500">Total Revenue</p>
-            <p className="text-3xl font-bold text-green-600">${totalRevenue}</p>
+            <p className="text-3xl font-bold text-green-600">
+              ${totalRevenue.toFixed(2)}
+            </p>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Create */}
-            <div className="bg-white p-6 rounded-xl shadow">
-              <h2 className="font-semibold mb-4">Create Invoice</h2>
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+            <div className="rounded-xl bg-white p-6 shadow">
+              <h2 className="mb-4 font-semibold">
+                {editingInvoiceId ? "Edit Invoice" : "Create Invoice"}
+              </h2>
 
-              <form onSubmit={handleCreate} className="space-y-4">
+              <form onSubmit={handleSaveInvoice} className="space-y-4">
                 <input
-                  className="w-full border p-2 rounded"
+                  className="w-full rounded border p-2"
                   placeholder="Amount"
+                  type="number"
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)}
                 />
 
                 <select
-                  className="w-full border p-2 rounded"
+                  className="w-full rounded border p-2"
                   value={clientId}
-                  onChange={(e) => setClientId(Number(e.target.value))}
+                  onChange={(e) =>
+                    setClientId(e.target.value ? Number(e.target.value) : "")
+                  }
                 >
                   <option value="">Select client</option>
                   {clients.map((c) => (
@@ -147,9 +226,11 @@ export default function InvoicesPage() {
                 </select>
 
                 <select
-                  className="w-full border p-2 rounded"
+                  className="w-full rounded border p-2"
                   value={projectId}
-                  onChange={(e) => setProjectId(Number(e.target.value))}
+                  onChange={(e) =>
+                    setProjectId(e.target.value ? Number(e.target.value) : "")
+                  }
                 >
                   <option value="">Optional project</option>
                   {projects.map((p) => (
@@ -159,15 +240,65 @@ export default function InvoicesPage() {
                   ))}
                 </select>
 
-                <button className="w-full bg-blue-600 text-white py-2 rounded">
-                  Create
+                <select
+                  className="w-full rounded border p-2"
+                  value={status}
+                  onChange={(e) => setStatus(e.target.value)}
+                >
+                  <option value="DRAFT">Draft</option>
+                  <option value="SENT">Sent</option>
+                  <option value="PAID">Paid</option>
+                </select>
+
+                <div>
+                  <label className="mb-1 block text-sm text-gray-500">
+                    Issue Date
+                  </label>
+                  <input
+                    className="w-full rounded border p-2"
+                    type="date"
+                    value={issueDate}
+                    onChange={(e) => setIssueDate(e.target.value)}
+                  />
+                </div>
+
+                <div>
+                  <label className="mb-1 block text-sm text-gray-500">
+                    Due Date
+                  </label>
+                  <input
+                    className="w-full rounded border p-2"
+                    type="date"
+                    value={dueDate}
+                    onChange={(e) => setDueDate(e.target.value)}
+                  />
+                </div>
+
+                <textarea
+                  className="w-full rounded border p-2"
+                  placeholder="Notes"
+                  value={notes}
+                  onChange={(e) => setNotes(e.target.value)}
+                />
+
+                <button className="w-full rounded bg-blue-600 py-2 text-white hover:bg-blue-700">
+                  {editingInvoiceId ? "Update Invoice" : "Create Invoice"}
                 </button>
+
+                {editingInvoiceId && (
+                  <button
+                    type="button"
+                    onClick={handleCancelEdit}
+                    className="w-full rounded bg-slate-500 py-2 text-white hover:bg-slate-600"
+                  >
+                    Cancel Edit
+                  </button>
+                )}
               </form>
             </div>
 
-            {/* List */}
-            <div className="lg:col-span-2 bg-white p-6 rounded-xl shadow">
-              <h2 className="font-semibold mb-4">Invoice List</h2>
+            <div className="rounded-xl bg-white p-6 shadow lg:col-span-2">
+              <h2 className="mb-4 font-semibold">Invoice List</h2>
 
               {loading ? (
                 <p>Loading...</p>
@@ -176,37 +307,78 @@ export default function InvoicesPage() {
               ) : (
                 <div className="space-y-3">
                   {invoices.map((i) => (
-                    <div
-                      key={i.id}
-                      className="border p-4 rounded flex justify-between items-center"
-                    >
-                      <div>
-                        <p className="font-semibold">${i.amount}</p>
-                        <p className="text-sm text-gray-500">{i.clientName}</p>
-                        {i.projectName && (
-                          <p className="text-xs text-gray-400">
-                            {i.projectName}
+                    <div key={i.id} className="rounded border p-4">
+                      <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+                        <div>
+                          <p className="font-semibold">
+                            ${Number(i.amount).toFixed(2)}
                           </p>
-                        )}
 
-                        <span
-                          className={`text-xs px-2 py-1 rounded ${getStatusColor(
-                            i.status,
-                          )}`}
-                        >
-                          {i.status}
-                        </span>
+                          <p className="text-sm text-gray-500">
+                            {i.clientName}
+                          </p>
+
+                          {i.projectName && (
+                            <p className="text-xs text-gray-400">
+                              Project: {i.projectName}
+                            </p>
+                          )}
+
+                          <div className="mt-2 flex flex-wrap gap-2 text-xs text-gray-500">
+                            {i.issueDate && (
+                              <span className="rounded bg-gray-100 px-2 py-1">
+                                Issued: {i.issueDate}
+                              </span>
+                            )}
+
+                            {i.dueDate && (
+                              <span className="rounded bg-gray-100 px-2 py-1">
+                                Due: {i.dueDate}
+                              </span>
+                            )}
+                          </div>
+
+                          {i.notes && (
+                            <p className="mt-2 text-xs text-gray-500">
+                              Notes: {i.notes}
+                            </p>
+                          )}
+
+                          <span
+                            className={`mt-2 inline-block rounded px-2 py-1 text-xs ${getStatusColor(
+                              i.status,
+                            )}`}
+                          >
+                            {i.status}
+                          </span>
+                        </div>
+
+                        <div className="flex flex-col gap-2 sm:flex-row">
+                          <select
+                            value={i.status}
+                            onChange={(e) => changeStatus(i.id, e.target.value)}
+                            className="rounded border px-2 py-1 text-sm"
+                          >
+                            <option value="DRAFT">Draft</option>
+                            <option value="SENT">Sent</option>
+                            <option value="PAID">Paid</option>
+                          </select>
+
+                          <button
+                            onClick={() => handleEditInvoice(i)}
+                            className="rounded bg-yellow-500 px-3 py-1 text-sm text-white hover:bg-yellow-600"
+                          >
+                            Edit
+                          </button>
+
+                          <button
+                            onClick={() => handleDeleteInvoice(i.id)}
+                            className="rounded bg-red-600 px-3 py-1 text-sm text-white hover:bg-red-700"
+                          >
+                            Delete
+                          </button>
+                        </div>
                       </div>
-
-                      <select
-                        value={i.status}
-                        onChange={(e) => changeStatus(i.id, e.target.value)}
-                        className="border rounded px-2 py-1"
-                      >
-                        <option value="DRAFT">Draft</option>
-                        <option value="SENT">Sent</option>
-                        <option value="PAID">Paid</option>
-                      </select>
                     </div>
                   ))}
                 </div>

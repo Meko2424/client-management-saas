@@ -18,6 +18,7 @@ public class CreateInvoiceRequest {
     @NotNull
     private BigDecimal amount;
 
+    private String notes;
     private LocalDate issueDate;
     private LocalDate dueDate;
 }

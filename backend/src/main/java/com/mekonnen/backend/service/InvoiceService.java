@@ -58,6 +58,7 @@ public class InvoiceService {
         invoice.setAmount(request.getAmount());
         invoice.setIssueDate(request.getIssueDate());
         invoice.setDueDate(request.getDueDate());
+        invoice.setNotes(request.getNotes());
 
         return map(invoiceRepository.save(invoice));
     }
@@ -85,6 +86,7 @@ public class InvoiceService {
                 i.getStatus(),
                 i.getIssueDate(),
                 i.getDueDate(),
+                i.getNotes(),
                 i.getClient().getName(),
                 i.getProject() != null ? i.getProject().getName() : null
         );

@@ -78,6 +78,19 @@ export function createInvoice(data: any) {
   });
 }
 
+export function updateInvoice(id: number, data: any) {
+  return apiFetch(`/api/invoices/${id}`, {
+    method: "PUT",
+    body: JSON.stringify(data),
+  });
+}
+
+export function deleteInvoice(id: number) {
+  return apiFetch(`/api/invoices/${id}`, {
+    method: "DELETE",
+  });
+}
+
 export function updateInvoiceStatus(id: number, status: string) {
   return apiFetch(`/api/invoices/${id}/status`, {
     method: "PATCH",

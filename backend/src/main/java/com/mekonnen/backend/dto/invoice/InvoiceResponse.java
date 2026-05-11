@@ -15,6 +15,7 @@ public class InvoiceResponse {
     private InvoiceStatus status;
     private LocalDate issueDate;
     private LocalDate dueDate;
+    private String notes;
 
     private String clientName;
     private String projectName;
