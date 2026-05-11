@@ -47,6 +47,19 @@ export function createProject(data: any) {
   });
 }
 
+export function updateProject(id: number, data: any) {
+  return apiFetch(`/api/projects/${id}`, {
+    method: "PUT",
+    body: JSON.stringify(data),
+  });
+}
+
+export function deleteProject(id: number) {
+  return apiFetch(`/api/projects/${id}`, {
+    method: "DELETE",
+  });
+}
+
 export function updateProjectStatus(id: number, status: string) {
   return apiFetch(`/api/projects/${id}/status`, {
     method: "PATCH",

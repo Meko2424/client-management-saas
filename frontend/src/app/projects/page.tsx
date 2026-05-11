@@ -7,6 +7,8 @@ import ProtectedRoute from "@/components/ProtectedRoute";
 import {
   getProjects,
   createProject,
+  updateProject,
+  deleteProject,
   getClients,
   updateProjectStatus,
 } from "@/lib/clientApi";
@@ -27,6 +29,10 @@ type Client = {
 
 export default function ProjectsPage() {
   const [projects, setProjects] = useState<Project[]>([]);
+  const [editingProjectId, setEditingProjectId] = useState<number | null>(null);
+  const [description, setDescription] = useState("");
+  const [budget, setBudget] = useState("");
+  const [status, setStatus] = useState("PLANNED");
   const [clients, setClients] = useState<Client[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -52,7 +58,7 @@ export default function ProjectsPage() {
     loadData();
   }, []);
 
-  async function handleCreate(e: any) {
+  async function handleSubmitProject(e: React.FormEvent) {
     e.preventDefault();
 
     if (!clientId) {
@@ -60,24 +66,75 @@ export default function ProjectsPage() {
       return;
     }
 
+    const payload = {
+      name,
+      description,
+      clientId,
+      status,
+      budget: budget ? Number(budget) : null,
+    };
+
     try {
-      const newProject = await createProject({
-        name,
-        clientId,
-      });
+      if (editingProjectId) {
+        const updated = await updateProject(editingProjectId, payload);
 
-      // Instant UI update
-      setProjects((prev) => [newProject, ...prev]);
+        setProjects((prev) =>
+          prev.map((p) => (p.id === editingProjectId ? updated : p)),
+        );
 
-      toast.success("Project created");
+        toast.success("Project updated");
+      } else {
+        const newProject = await createProject(payload);
 
-      setName("");
-      setClientId("");
+        setProjects((prev) => [newProject, ...prev]);
+
+        toast.success("Project created");
+      }
+
+      handleCancelEdit();
     } catch (error) {
       toast.error(
-        error instanceof Error ? error.message : "Failed to create project",
+        error instanceof Error ? error.message : "Failed to save project",
       );
     }
+  }
+
+  function handleEdit(project: Project) {
+    setEditingProjectId(project.id);
+    setName(project.name || "");
+    setDescription(project.description || "");
+    setBudget(project.budget ? String(project.budget) : "");
+    setStatus(project.status || "PLANNED");
+
+    const matchingClient = clients.find(
+      (client) => client.name === project.clientName,
+    );
+    setClientId(matchingClient ? matchingClient.id : "");
+  }
+
+  async function handleDeleteProject(id: number) {
+    if (!confirm("Delete this project?")) return;
+
+    try {
+      await deleteProject(id);
+
+      setProjects((prev) => prev.filter((p) => p.id !== id));
+
+      toast.success("Project deleted");
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Failed to delete project",
+      );
+    }
+  }
+
+  function handleCancelEdit() {
+    setEditingProjectId(null);
+    setName("");
+    setDescription("");
+    setBudget("");
+    setStatus("PLANNED");
+    setClientId("");
   }
 
   async function changeStatus(id: number, status: string) {
@@ -116,7 +173,7 @@ export default function ProjectsPage() {
             <div className="bg-white p-6 rounded-xl shadow">
               <h2 className="font-semibold mb-4">Create Project</h2>
 
-              <form onSubmit={handleCreate} className="space-y-4">
+              <form onSubmit={handleSubmitProject} className="space-y-4">
                 <input
                   className="w-full border p-2 rounded"
                   placeholder="Project name"
@@ -124,6 +181,31 @@ export default function ProjectsPage() {
                   onChange={(e) => setName(e.target.value)}
                   required
                 />
+                <textarea
+                  className="w-full border p-2 rounded"
+                  placeholder="Description"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                />
+
+                <input
+                  className="w-full border p-2 rounded"
+                  placeholder="Budget"
+                  type="number"
+                  value={budget}
+                  onChange={(e) => setBudget(e.target.value)}
+                />
+
+                <select
+                  className="w-full border p-2 rounded"
+                  value={status}
+                  onChange={(e) => setStatus(e.target.value)}
+                >
+                  <option value="PLANNED">Planned</option>
+                  <option value="ACTIVE">Active</option>
+                  <option value="COMPLETED">Completed</option>
+                  <option value="ON_HOLD">On Hold</option>
+                </select>
 
                 <select
                   className="w-full border p-2 rounded"
@@ -139,8 +221,17 @@ export default function ProjectsPage() {
                 </select>
 
                 <button className="w-full bg-blue-600 text-white py-2 rounded">
-                  Create
+                  {editingProjectId ? "Update Project" : "Create"}
                 </button>
+                {editingProjectId && (
+                  <button
+                    type="button"
+                    onClick={handleCancelEdit}
+                    className="w-full bg-slate-500 text-white py-2 rounded hover:bg-slate-600"
+                  >
+                    Cancel Edit
+                  </button>
+                )}
               </form>
             </div>
 
@@ -190,6 +281,21 @@ export default function ProjectsPage() {
                         {p.budget && (
                           <p className="text-sm font-medium">${p.budget}</p>
                         )}
+                      </div>
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => handleEdit(p)}
+                          className="rounded bg-yellow-500 px-3 py-1 text-sm text-white hover:bg-yellow-600"
+                        >
+                          Edit
+                        </button>
+
+                        <button
+                          onClick={() => handleDeleteProject(p.id)}
+                          className="rounded bg-red-600 px-3 py-1 text-sm text-white hover:bg-red-700"
+                        >
+                          Delete
+                        </button>
                       </div>
                     </div>
                   ))}
