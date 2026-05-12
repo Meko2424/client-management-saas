@@ -11,6 +11,13 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 // to call the Spring Boot backend on localhost:8080.
 @Configuration
 public class CorsConfig {
+
+    private final CorsProperties corsProperties;
+
+    public CorsConfig(CorsProperties corsProperties){
+        this.corsProperties = corsProperties;
+    }
+
     // This bean customizes Spring MVC CORS settings.
     @Bean
     public WebMvcConfigurer corsConfigurer() {
@@ -19,12 +26,14 @@ public class CorsConfig {
             // This method tells Spring which frontend origins can call the API.
             @Override
             public void addCorsMappings(CorsRegistry registry) {
-                registry
+                String[] origins = corsProperties.getAllowedOrigins().split(",");
+
+                        registry
                         // Apply this CORS rule to all backend endpoints.
                         .addMapping("/**")
 
                         // Allow the local Next.js frontend.
-                        .allowedOrigins("http://localhost:3000")
+                        .allowedOrigins(origins)
 
                         // Allow common HTTP methods used by our API.
                         .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
