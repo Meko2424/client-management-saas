@@ -21,15 +21,18 @@ public class PasswordResetService {
     private final UserRepository userRepository;
     private final PasswordResetTokenRepository tokenRepository;
     private final PasswordEncoder passwordEncoder;
+    private final EmailService emailService;
 
     public PasswordResetService(
             UserRepository userRepository,
             PasswordResetTokenRepository tokenRepository,
-            PasswordEncoder passwordEncoder
+            PasswordEncoder passwordEncoder,
+            EmailService emailService
     ) {
         this.userRepository = userRepository;
         this.tokenRepository = tokenRepository;
         this.passwordEncoder = passwordEncoder;
+        this.emailService = emailService;
     }
 
     // Generate reset token if email exists.
@@ -48,7 +51,15 @@ public class PasswordResetService {
             // Local development only.
             // Later, I will replace this with real email sending.
             System.out.println("PASSWORD RESET LINK:");
-            System.out.println("http://localhost:3000/reset-password?token=" + savedToken.getToken());
+//            System.out.println("http://localhost:3000/reset-password?token=" + savedToken.getToken());
+            String resetLink =
+                    "http://localhost:3000/reset-password?token=" + savedToken.getToken();
+
+            emailService.sendPasswordResetEmail(
+                    user.getEmail(),
+                    resetLink
+            );
+
         });
     }
 
