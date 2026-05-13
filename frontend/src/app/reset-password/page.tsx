@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import toast from "react-hot-toast";
+import { Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { resetPasswordApi } from "@/lib/authApi";
@@ -11,6 +12,14 @@ type ResetPasswordForm = {
 };
 
 export default function ResetPasswordPage() {
+  return (
+    <Suspense fallback={<p className="p-6">Loading reset page...</p>}>
+      <ResetPasswordContent />
+    </Suspense>
+  );
+}
+
+function ResetPasswordContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -35,7 +44,6 @@ export default function ResetPasswordPage() {
       });
 
       toast.success("Password reset successful. Please log in.");
-
       router.push("/login");
     } catch {
       toast.error("Invalid or expired reset token");
