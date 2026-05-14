@@ -13,6 +13,7 @@ import {
   getClients,
   getProjects,
 } from "@/lib/clientApi";
+import { showError, showSuccess } from "@/lib/toastUtils";
 
 type Invoice = {
   id: number;
@@ -52,8 +53,8 @@ export default function InvoicesPage() {
       setInvoices(inv);
       setClients(cli);
       setProjects(proj);
-    } catch {
-      toast.error("Failed to load invoices");
+    } catch (error) {
+      showError(error, "Failed to load invoices. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -98,7 +99,7 @@ export default function InvoicesPage() {
     e.preventDefault();
 
     if (!clientId || !amount) {
-      toast.error("Client and amount required");
+      showError(null, "Client and amount required");
       return;
     }
 
@@ -122,20 +123,18 @@ export default function InvoicesPage() {
           ),
         );
 
-        toast.success("Invoice updated");
+        showSuccess("Invoice updated successfully!");
       } else {
         const newInvoice = await createInvoice(payload);
 
         setInvoices((prev) => [newInvoice, ...prev]);
 
-        toast.success("Invoice created");
+        showSuccess("Invoice created successfully!");
       }
 
       handleCancelEdit();
     } catch (error) {
-      toast.error(
-        error instanceof Error ? error.message : "Failed to save invoice",
-      );
+      showError(error, "Unable to save invoice. Please try again.");
     }
   }
 
@@ -147,11 +146,9 @@ export default function InvoicesPage() {
 
       setInvoices((prev) => prev.filter((invoice) => invoice.id !== id));
 
-      toast.success("Invoice deleted");
+      showSuccess("Invoice deleted successfully!");
     } catch (error) {
-      toast.error(
-        error instanceof Error ? error.message : "Failed to delete invoice",
-      );
+      showError(error, "Failed to delete invoice. Please try again.");
     }
   }
 
@@ -161,9 +158,9 @@ export default function InvoicesPage() {
 
       setInvoices((prev) => prev.map((i) => (i.id === id ? updated : i)));
 
-      toast.success("Status updated");
-    } catch {
-      toast.error("Failed to update status");
+      showSuccess("Status updated successfully!");
+    } catch (error) {
+      showError(error, "Failed to update status. Please try again.");
     }
   }
 

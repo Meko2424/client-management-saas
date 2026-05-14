@@ -4,6 +4,7 @@ import toast from "react-hot-toast";
 import DashboardLayout from "@/components/DashboardLayout";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import { createCheckoutSession } from "@/lib/billingApi";
+import { showError, showSuccess } from "@/lib/toastUtils";
 
 export default function UpgradePage() {
   async function handleUpgrade() {
@@ -12,8 +13,8 @@ export default function UpgradePage() {
 
       // Redirect user to Stripe Checkout
       window.location.href = data.url;
-    } catch {
-      toast.error("Unable to start checkout");
+    } catch (error) {
+      showError(error, "Unable to start checkout");
     }
   }
 

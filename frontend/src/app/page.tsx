@@ -18,6 +18,7 @@ import DashboardLayout from "@/components/DashboardLayout";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import { getDashboardSummary } from "@/lib/dashboardApi";
 import { getBillingStatus } from "@/lib/billingApi";
+import { showError, showSuccess } from "@/lib/toastUtils";
 
 type DashboardSummary = {
   totalClients: number;
@@ -56,8 +57,8 @@ export default function DashboardPage() {
 
         setSummary(summaryData);
         setBillingStatus(billingData);
-      } catch {
-        toast.error("Failed to load dashboard summary");
+      } catch (error) {
+        showError(error, "Failed to load dashboard summary");
       } finally {
         setLoading(false);
       }

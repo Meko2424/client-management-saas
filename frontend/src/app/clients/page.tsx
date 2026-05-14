@@ -14,6 +14,7 @@ import {
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { showError, showSuccess } from "@/lib/toastUtils";
 
 const clientSchema = z.object({
   name: z.string().min(1, "Client name is required"),
@@ -56,8 +57,8 @@ export default function ClientsPage() {
     try {
       const data = await getClients();
       setClients(data);
-    } catch {
-      toast.error("Failed to load clients");
+    } catch (error) {
+      showError(error, "Unable to load clients. Please refresh the page.");
     } finally {
       setLoading(false);
     }
@@ -67,10 +68,10 @@ export default function ClientsPage() {
     try {
       if (editingClientId) {
         await updateClient(editingClientId, data);
-        toast.success("Client updated");
+        showSuccess("Client updated successfully!");
       } else {
         await createClient(data);
-        toast.success("Client created");
+        showSuccess("Client created successfully!");
       }
 
       reset({
@@ -85,9 +86,7 @@ export default function ClientsPage() {
 
       await loadClients();
     } catch (error) {
-      toast.error(
-        error instanceof Error ? error.message : "Failed to save client",
-      );
+      showError(error, "Unable to save client. Please try again.");
     }
   }
 
@@ -120,10 +119,10 @@ export default function ClientsPage() {
 
     try {
       await deleteClient(id);
-      toast.success("Client deleted");
+      showSuccess("Client deleted successfully");
       loadClients();
-    } catch {
-      toast.error("Failed to delete client");
+    } catch (error) {
+      showError(error, "Unable to delete client");
     }
   }
 

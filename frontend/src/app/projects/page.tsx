@@ -12,6 +12,7 @@ import {
   getClients,
   updateProjectStatus,
 } from "@/lib/clientApi";
+import { showError, showSuccess } from "@/lib/toastUtils";
 
 type Project = {
   id: number;
@@ -48,8 +49,8 @@ export default function ProjectsPage() {
 
       setProjects(projectsData);
       setClients(clientsData);
-    } catch {
-      toast.error("Failed to load data");
+    } catch (error) {
+      showError(error, "Failed to load data. Please refresh the page.");
     } finally {
       setLoading(false);
     }
@@ -62,7 +63,7 @@ export default function ProjectsPage() {
     e.preventDefault();
 
     if (!clientId) {
-      toast.error("Select a client");
+      showError(null, "Select a client");
       return;
     }
 
@@ -82,20 +83,18 @@ export default function ProjectsPage() {
           prev.map((p) => (p.id === editingProjectId ? updated : p)),
         );
 
-        toast.success("Project updated");
+        showSuccess("Project updated successfully!");
       } else {
         const newProject = await createProject(payload);
 
         setProjects((prev) => [newProject, ...prev]);
 
-        toast.success("Project created");
+        showSuccess("Project created successfully!");
       }
 
       handleCancelEdit();
     } catch (error) {
-      toast.error(
-        error instanceof Error ? error.message : "Failed to save project",
-      );
+      showError(error, "Unable to save project. Please try again.");
     }
   }
 
@@ -120,11 +119,9 @@ export default function ProjectsPage() {
 
       setProjects((prev) => prev.filter((p) => p.id !== id));
 
-      toast.success("Project deleted");
+      showSuccess("Project deleted successfully!");
     } catch (error) {
-      toast.error(
-        error instanceof Error ? error.message : "Failed to delete project",
-      );
+      showError(error, "Failed to delete project. Please try again.");
     }
   }
 
@@ -143,9 +140,9 @@ export default function ProjectsPage() {
 
       setProjects((prev) => prev.map((p) => (p.id === id ? updated : p)));
 
-      toast.success("Status updated");
-    } catch {
-      toast.error("Failed to update status");
+      showSuccess("Status updated successfully!");
+    } catch (error) {
+      showError(error, "Failed to update status");
     }
   }
 
@@ -253,6 +250,11 @@ export default function ProjectsPage() {
                       <div>
                         <p className="font-semibold">{p.name}</p>
                         <p className="text-sm text-gray-500">{p.clientName}</p>
+                        {p.description && (
+                          <p className="mt-1 text-sm text-gray-600">
+                            {p.description}
+                          </p>
+                        )}
 
                         {/* Colored Status Badge */}
                         <span

@@ -6,6 +6,7 @@ import { Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { resetPasswordApi } from "@/lib/authApi";
+import { showError, showSuccess } from "@/lib/toastUtils";
 
 type ResetPasswordForm = {
   newPassword: string;
@@ -33,7 +34,7 @@ function ResetPasswordContent() {
 
   async function onSubmit(data: ResetPasswordForm) {
     if (!token) {
-      toast.error("Reset token is missing");
+      showError(null, "Reset token is missing");
       return;
     }
 
@@ -43,10 +44,10 @@ function ResetPasswordContent() {
         newPassword: data.newPassword,
       });
 
-      toast.success("Password reset successful. Please log in.");
+      showSuccess("Password reset successful. Please log in.");
       router.push("/login");
-    } catch {
-      toast.error("Invalid or expired reset token");
+    } catch (error) {
+      showError(error, "Invalid or expired reset token");
     }
   }
 

@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { registerApi } from "@/lib/authApi";
 //import { useAuth } from "@/context/AuthContext";
+import { showError, showSuccess } from "@/lib/toastUtils";
 
 type RegisterFormData = {
   fullName: string;
@@ -37,11 +38,11 @@ export default function RegisterPage() {
       //   router.push("/clients");
       await registerApi(data);
 
-      toast.success("Account created successfully. Please log in.");
+      showSuccess("Account created successfully. Please log in.");
 
       router.push("/login");
-    } catch {
-      toast.error("Registration failed");
+    } catch (error) {
+      showError(error, "Registration failed");
     }
   }
 

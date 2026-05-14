@@ -4,8 +4,8 @@ import { useForm } from "react-hook-form";
 import { loginApi } from "@/lib/authApi";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
-import toast from "react-hot-toast";
 import Link from "next/link";
+import { showError, showSuccess } from "@/lib/toastUtils";
 
 export default function LoginPage() {
   const { register, handleSubmit } = useForm();
@@ -19,11 +19,11 @@ export default function LoginPage() {
       // Save user + token
       login(res);
 
-      toast.success("Logged in successfully");
+      showSuccess("Logged in successfully!");
 
       router.push("/clients");
-    } catch {
-      toast.error("Invalid credentials");
+    } catch (error) {
+      showError(error, "Invalid email or password.");
     }
   }
 

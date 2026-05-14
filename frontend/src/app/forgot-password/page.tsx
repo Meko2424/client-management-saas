@@ -4,6 +4,7 @@ import Link from "next/link";
 import toast from "react-hot-toast";
 import { useForm } from "react-hook-form";
 import { forgotPasswordApi } from "@/lib/authApi";
+import { showError, showSuccess } from "@/lib/toastUtils";
 
 type ForgotPasswordForm = {
   email: string;
@@ -20,9 +21,9 @@ export default function ForgotPasswordPage() {
     try {
       await forgotPasswordApi(data);
 
-      toast.success("If an account exists, a reset link has been sent.");
-    } catch {
-      toast.error("Unable to process request");
+      showSuccess("If an account exists, a reset link has been sent.");
+    } catch (error) {
+      showError(error, "Unable to process request. Please try again.");
     }
   }
 
