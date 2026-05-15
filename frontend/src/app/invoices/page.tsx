@@ -15,6 +15,7 @@ import {
 } from "@/lib/clientApi";
 import { showError, showSuccess } from "@/lib/toastUtils";
 import { ListSkeleton } from "@/components/LoadingStates";
+import EmptyState from "@/components/EmptyState";
 
 type Invoice = {
   id: number;
@@ -301,7 +302,18 @@ export default function InvoicesPage() {
               {loading ? (
                 <ListSkeleton rows={4} />
               ) : invoices.length === 0 ? (
-                <p>No invoices yet.</p>
+                // <p>No invoices yet.</p>
+                <EmptyState
+                  title="No invoices yet"
+                  description="Create your first invoice and start tracking revenue."
+                  buttonText="Create Invoice"
+                  onAction={() => {
+                    window.scrollTo({
+                      top: 0,
+                      behavior: "smooth",
+                    });
+                  }}
+                />
               ) : (
                 <div className="space-y-3">
                   {invoices.map((i) => (

@@ -1,7 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import toast from "react-hot-toast";
+import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
 import DashboardLayout from "@/components/DashboardLayout";
 import ProtectedRoute from "@/components/ProtectedRoute";
@@ -16,6 +15,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { showError, showSuccess } from "@/lib/toastUtils";
 import { ListSkeleton } from "@/components/LoadingStates";
+import EmptyState from "@/components/EmptyState";
 
 const clientSchema = z.object({
   name: z.string().min(1, "Client name is required"),
@@ -40,6 +40,7 @@ export default function ClientsPage() {
   const [clients, setClients] = useState<Client[]>([]);
   const [loading, setLoading] = useState(true);
   const [editingClientId, setEditingClientId] = useState<number | null>(null);
+  const formRef = useRef<HTMLDivElement | null>(null);
 
   const {
     register,
@@ -142,7 +143,7 @@ export default function ClientsPage() {
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Create client form */}
-            <div className="bg-white rounded-xl shadow p-6">
+            <div ref={formRef} className="bg-white rounded-xl shadow p-6">
               <h2 className="text-lg font-semibold mb-4">
                 {editingClientId ? "Edit Client" : "Add Client"}
               </h2>
@@ -222,7 +223,18 @@ export default function ClientsPage() {
               {loading ? (
                 <ListSkeleton rows={4} />
               ) : clients.length === 0 ? (
-                <p className="text-slate-500">No clients yet.</p>
+                // <p className="text-slate-500">No clients yet.</p>
+                <EmptyState
+                  title="No clients yet"
+                  description="Create your first client to start managing projects and invoices."
+                  buttonText="Create Client"
+                  onAction={() => {
+                    formRef.current?.scrollIntoView({
+                      behavior: "smooth",
+                      block: "start",
+                    });
+                  }}
+                />
               ) : (
                 <div className="space-y-3">
                   {clients.map((client) => (

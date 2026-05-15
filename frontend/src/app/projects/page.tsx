@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import toast from "react-hot-toast";
 import DashboardLayout from "@/components/DashboardLayout";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import {
@@ -14,6 +13,7 @@ import {
 } from "@/lib/clientApi";
 import { showError, showSuccess } from "@/lib/toastUtils";
 import { ListSkeleton } from "@/components/LoadingStates";
+import EmptyState from "@/components/EmptyState";
 
 type Project = {
   id: number;
@@ -240,7 +240,18 @@ export default function ProjectsPage() {
               {loading ? (
                 <ListSkeleton rows={4} />
               ) : projects.length === 0 ? (
-                <p>No projects yet.</p>
+                // <p>No projects yet.</p>
+                <EmptyState
+                  title="No projects yet"
+                  description="Create your first project to track client work and progress."
+                  buttonText="Create Project"
+                  onAction={() => {
+                    window.scrollTo({
+                      top: 0,
+                      behavior: "smooth",
+                    });
+                  }}
+                />
               ) : (
                 <div className="space-y-3">
                   {projects.map((p) => (
