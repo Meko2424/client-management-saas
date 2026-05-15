@@ -15,6 +15,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { showError, showSuccess } from "@/lib/toastUtils";
+import { ListSkeleton } from "@/components/LoadingStates";
 
 const clientSchema = z.object({
   name: z.string().min(1, "Client name is required"),
@@ -219,7 +220,7 @@ export default function ClientsPage() {
               <h2 className="text-lg font-semibold mb-4">Client List</h2>
 
               {loading ? (
-                <p>Loading clients...</p>
+                <ListSkeleton rows={4} />
               ) : clients.length === 0 ? (
                 <p className="text-slate-500">No clients yet.</p>
               ) : (

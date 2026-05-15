@@ -14,6 +14,7 @@ import {
   getProjects,
 } from "@/lib/clientApi";
 import { showError, showSuccess } from "@/lib/toastUtils";
+import { ListSkeleton } from "@/components/LoadingStates";
 
 type Invoice = {
   id: number;
@@ -298,7 +299,7 @@ export default function InvoicesPage() {
               <h2 className="mb-4 font-semibold">Invoice List</h2>
 
               {loading ? (
-                <p>Loading...</p>
+                <ListSkeleton rows={4} />
               ) : invoices.length === 0 ? (
                 <p>No invoices yet.</p>
               ) : (

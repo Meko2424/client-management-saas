@@ -13,6 +13,7 @@ import {
   updateProjectStatus,
 } from "@/lib/clientApi";
 import { showError, showSuccess } from "@/lib/toastUtils";
+import { ListSkeleton } from "@/components/LoadingStates";
 
 type Project = {
   id: number;
@@ -237,7 +238,7 @@ export default function ProjectsPage() {
               <h2 className="font-semibold mb-4">Project List</h2>
 
               {loading ? (
-                <p>Loading...</p>
+                <ListSkeleton rows={4} />
               ) : projects.length === 0 ? (
                 <p>No projects yet.</p>
               ) : (

@@ -19,6 +19,7 @@ import ProtectedRoute from "@/components/ProtectedRoute";
 import { getDashboardSummary } from "@/lib/dashboardApi";
 import { getBillingStatus } from "@/lib/billingApi";
 import { showError, showSuccess } from "@/lib/toastUtils";
+import { ChartSkeleton, MetricCardSkeleton } from "@/components/LoadingStates";
 
 type DashboardSummary = {
   totalClients: number;
@@ -98,7 +99,19 @@ export default function DashboardPage() {
           </div>
 
           {loading ? (
-            <p>Loading dashboard...</p>
+            <>
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
+                <MetricCardSkeleton />
+                <MetricCardSkeleton />
+                <MetricCardSkeleton />
+                <MetricCardSkeleton />
+              </div>
+
+              <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
+                <ChartSkeleton />
+                <ChartSkeleton />
+              </div>
+            </>
           ) : !summary ? (
             <p>No dashboard data available.</p>
           ) : (
