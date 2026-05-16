@@ -34,9 +34,10 @@ export default function DashboardLayout({
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 flex">
+    <div className="min-h-screen bg-gray-100 md:flex">
       {/* Sidebar */}
-      <aside className="w-64 bg-slate-900 text-white p-6">
+      <aside className="bg-slate-900 text-white p-4 md:min-h-screen md:w-64 md:p-6">
+        {/* <aside className="w-64 bg-slate-900 text-white p-6"> */}
         <h1 className="text-xl font-bold mb-8">Mini CRM</h1>
 
         <div className="mb-6 rounded-lg bg-slate-800 px-3 py-2 text-sm">
@@ -48,7 +49,8 @@ export default function DashboardLayout({
           </span>
         </div>
 
-        <nav className="space-y-3">
+        <nav className="flex flex-wrap gap-3 md:block md:space-y-3">
+          {/* <nav className="space-y-3"> */}
           <Link className="block hover:text-blue-300" href="/">
             Dashboard
           </Link>
@@ -81,7 +83,8 @@ export default function DashboardLayout({
       </aside>
 
       {/* Main content */}
-      <main className="flex-1 p-8">{children}</main>
+      {/* <main className="flex-1 p-8">{children}</main> */}
+      <main className="flex-1 p-4 md:p-8">{children}</main>
     </div>
   );
 }

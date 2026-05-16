@@ -21,7 +21,8 @@ export default function UpgradePage() {
   return (
     <ProtectedRoute>
       <DashboardLayout>
-        <div className="mx-auto max-w-4xl">
+        <div className="mx-auto max-w-7xl space-y-6 md:space-y-8">
+          {/* <div className="mx-auto max-w-4xl"> */}
           <div className="rounded-2xl bg-white p-8 shadow">
             <h1 className="text-3xl font-bold text-slate-900">
               Upgrade to PRO

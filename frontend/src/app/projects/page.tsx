@@ -163,7 +163,8 @@ export default function ProjectsPage() {
   return (
     <ProtectedRoute>
       <DashboardLayout>
-        <div className="max-w-6xl mx-auto">
+        <div className="mx-auto max-w-7xl space-y-6 md:space-y-8">
+          {/* <div className="max-w-6xl mx-auto"> */}
           <h1 className="text-3xl font-bold mb-6">Projects</h1>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -257,7 +258,8 @@ export default function ProjectsPage() {
                   {projects.map((p) => (
                     <div
                       key={p.id}
-                      className="border p-4 rounded flex justify-between items-center"
+                      className="rounded-lg border p-4 flex flex-col gap-4 md:flex-row md:items-start md:justify-between"
+                      // className="border p-4 rounded flex justify-between items-center"
                     >
                       <div>
                         <p className="font-semibold">{p.name}</p>
@@ -296,7 +298,8 @@ export default function ProjectsPage() {
                           <p className="text-sm font-medium">${p.budget}</p>
                         )}
                       </div>
-                      <div className="flex gap-2">
+                      <div className="flex flex-col gap-2 sm:flex-row">
+                        {/* <div className="flex gap-2"> */}
                         <button
                           onClick={() => handleEdit(p)}
                           className="rounded bg-yellow-500 px-3 py-1 text-sm text-white hover:bg-yellow-600"

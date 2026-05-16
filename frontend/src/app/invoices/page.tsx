@@ -184,7 +184,8 @@ export default function InvoicesPage() {
   return (
     <ProtectedRoute>
       <DashboardLayout>
-        <div className="mx-auto max-w-6xl">
+        <div className="mx-auto max-w-7xl space-y-6 md:space-y-8">
+          {/* <div className="mx-auto max-w-6xl"> */}
           <h1 className="mb-6 text-3xl font-bold">Invoices</h1>
 
           <div className="mb-6 rounded-xl bg-white p-6 shadow">
@@ -317,8 +318,9 @@ export default function InvoicesPage() {
               ) : (
                 <div className="space-y-3">
                   {invoices.map((i) => (
-                    <div key={i.id} className="rounded border p-4">
-                      <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+                    <div key={i.id} className="rounded-lg border p-4">
+                      <div className=" flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+                        {/* <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between"> */}
                         <div>
                           <p className="font-semibold">
                             ${Number(i.amount).toFixed(2)}
