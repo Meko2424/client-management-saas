@@ -67,11 +67,15 @@ export default function DashboardLayout({
             Invoices
           </Link>
 
-          {plan !== "PRO" && (
+          <Link className="block hover:text-blue-300" href="/upgrade">
+            {plan === "PRO" ? "Billing" : "Upgrade"}
+          </Link>
+
+          {/* {plan !== "PRO" && (
             <Link className="block hover:text-blue-300" href="/upgrade">
               Upgrade
             </Link>
-          )}
+          )} */}
         </nav>
 
         <button

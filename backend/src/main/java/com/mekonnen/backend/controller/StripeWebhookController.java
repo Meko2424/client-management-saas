@@ -79,6 +79,36 @@ public class StripeWebhookController {
                 activateUser(user, customerId, subscriptionId);
             }
 
+            if ("customer.subscription.updated".equals(event.getType())
+                    || "customer.subscription.deleted".equals(event.getType())) {
+
+                String stripeStatus = objectNode.path("status").asText(null);
+
+                System.out.println("Subscription event customer: " + customerId);
+                System.out.println("Subscription event subscription: " + subscriptionId);
+                System.out.println("Subscription event status: " + stripeStatus);
+
+                User user = userRepository.findByStripeCustomerId(customerId)
+                        .orElseThrow(() -> new RuntimeException(
+                                "User not found for Stripe customer: " + customerId
+                        ));
+
+                if ("active".equalsIgnoreCase(stripeStatus)
+                        || "trialing".equalsIgnoreCase(stripeStatus)) {
+                    user.setSubscriptionPlan("PRO");
+                    user.setSubscriptionStatus("ACTIVE");
+                    user.setStripeSubscriptionId(subscriptionId);
+                } else {
+                    user.setSubscriptionPlan("FREE");
+                    user.setSubscriptionStatus("INACTIVE");
+                    user.setStripeSubscriptionId(null);
+                }
+
+                userRepository.saveAndFlush(user);
+
+                System.out.println("Subscription status synchronized from Stripe");
+            }
+
             return ResponseEntity.ok("success");
 
         } catch (Exception ex) {

@@ -1,10 +1,10 @@
 "use client";
 
-import toast from "react-hot-toast";
 import DashboardLayout from "@/components/DashboardLayout";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import { createCheckoutSession } from "@/lib/billingApi";
-import { showError, showSuccess } from "@/lib/toastUtils";
+import { createCustomerPortalSession } from "@/lib/clientApi";
+import { showError } from "@/lib/toastUtils";
 
 export default function UpgradePage() {
   async function handleUpgrade() {
@@ -15,6 +15,16 @@ export default function UpgradePage() {
       window.location.href = data.url;
     } catch (error) {
       showError(error, "Unable to start checkout");
+    }
+  }
+
+  async function handleManageSubscription() {
+    try {
+      const response = await createCustomerPortalSession();
+
+      window.location.href = response.url;
+    } catch (error) {
+      showError(error, "Unable to open subscription management");
     }
   }
 
@@ -56,12 +66,21 @@ export default function UpgradePage() {
                   <li>✅ Full revenue dashboard</li>
                 </ul>
 
-                <button
-                  onClick={handleUpgrade}
-                  className="mt-6 w-full rounded-lg bg-blue-600 py-2 text-white hover:bg-blue-700"
-                >
-                  Upgrade with Stripe
-                </button>
+                <div className="mt-6 space-y-3">
+                  <button
+                    onClick={handleUpgrade}
+                    className="w-full rounded-lg bg-blue-600 px-4 py-2 font-medium text-white hover:bg-blue-700"
+                  >
+                    Upgrade with Stripe
+                  </button>
+
+                  <button
+                    onClick={handleManageSubscription}
+                    className="w-full rounded-lg bg-slate-800 px-4 py-2 font-medium text-white hover:bg-slate-900"
+                  >
+                    Manage Subscription
+                  </button>
+                </div>
               </div>
             </div>
           </div>

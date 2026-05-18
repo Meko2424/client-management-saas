@@ -97,3 +97,9 @@ export function updateInvoiceStatus(id: number, status: string) {
     body: JSON.stringify({ status }),
   });
 }
+
+export async function createCustomerPortalSession() {
+  return apiFetch("/api/billing/customer-portal", {
+    method: "POST",
+  });
+}
