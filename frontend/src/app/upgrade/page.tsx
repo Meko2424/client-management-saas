@@ -45,7 +45,10 @@ export default function UpgradePage() {
             <div className="mt-8 grid gap-6 md:grid-cols-2">
               <div className="rounded-xl border p-6">
                 <h2 className="text-xl font-semibold">Free</h2>
-                <p className="mt-2 text-slate-500">For testing the app.</p>
+                <p className="mt-2 text-slate-500">
+                  Perfect for getting started with client and project
+                  management.
+                </p>
 
                 <ul className="mt-4 space-y-2 text-sm text-slate-600">
                   <li>✅ 3 clients</li>
@@ -57,7 +60,10 @@ export default function UpgradePage() {
 
               <div className="rounded-xl border-2 border-blue-600 p-6">
                 <h2 className="text-xl font-semibold text-blue-700">PRO</h2>
-                <p className="mt-2 text-slate-500">For serious freelancers.</p>
+                <p className="mt-2 text-slate-500">
+                  Built for freelancers and agencies managing growing client
+                  workloads.
+                </p>
 
                 <ul className="mt-4 space-y-2 text-sm text-slate-600">
                   <li>✅ Unlimited clients</li>
